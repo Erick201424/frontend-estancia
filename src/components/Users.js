@@ -27,6 +27,8 @@ const Users = () => {
                                 <tr>
                                     <th>#</th>
                                     <th>Nombre</th>
+                                    <th>Apellido Paterno</th>
+                                    <th>Apellido Materno</th>
                                     <th>Curp</th>
                                     <th>Oficina</th>
                                 </tr>
