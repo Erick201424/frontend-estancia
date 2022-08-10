@@ -6,12 +6,14 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import { Button, Form, Modal } from 'react-bootstrap';
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
+import $ from 'jquery'; 
 
 const Users = () => {
     const navigate = useNavigate()
     const [userList, setUserList] = useState([]);
     const [officeList, setOfficeList] = useState([]);
     const [show, setShow] = useState(false);
+    const [smShow, setSmShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -23,14 +25,14 @@ const Users = () => {
         var last_name = document.getElementById('apellidoP').value;
         var second_last_name = document.getElementById('apellidoM').value;
         var curp = document.getElementById('curp').value;
-        var oficina = document.getElementById('oficina').value;
+        var oficina = (document.getElementById('oficina').selectedIndex) + 1;
 
         var body_json = JSON.stringify({
             "name": names,
             "lastName": last_name,
             "secondSurname": second_last_name,
             "curp": curp,
-            "catOfficeId": 1
+            "catOfficeId": oficina
         });
 
         var request_json = {
@@ -62,6 +64,44 @@ const Users = () => {
             });
     }
 
+    const handleAddOffice = async () => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var oficina = document.getElementById('office').value;
+
+        var body_json = JSON.stringify({
+            "name": oficina
+        });
+
+        var request_json = {
+            method: 'POST',
+            headers: myHeaders,
+            body: body_json,
+            redirect: 'follow'
+        };
+
+        const res = await fetch('http://localhost:3000/api/office/create', request_json)
+            .then(response => response.text())
+            .then(result => {
+                if (result === "Oficina registrada") {
+                    Swal.fire({
+                        title: 'Oficina creada con éxito',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    })
+                    setSmShow(false);
+                    show_clients();
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Registro inválido, inténtelo nuevamente',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                })
+            });
+    }
+
     const columns = [
         { dataField: "id", text: "Id", sort: true },
         { dataField: "name", text: "Nombre", sort: true, filter: textFilter() },
@@ -71,24 +111,24 @@ const Users = () => {
         { dataField: "oficina", text: "oficina", }
     ]
 
-    const pagination = paginationFactory({
-        page: 1,
-        sizePerPage: 5,
-        lastPageText: '>>',
-        firtsPageText: '<<',
-        nextPageText: '>',
-        prePageText: '<',
-        showTotal: true,
-        alwaysShowAllBtns: true,
-        onPageChange: function (page, sizePerPage) {
-            console.log('page', page);
-            console.log('sizePerPage', sizePerPage);
-        },
-        onSizePerPageChange: function (page, sizePerPage) {
-            console.log('page', page);
-            console.log('sizePerPage', sizePerPage);
-        }
-    });
+    // const pagination = paginationFactory({
+    //     page: 1,
+    //     sizePerPage: 5,
+    //     lastPageText: '>>',
+    //     firtsPageText: '<<',
+    //     nextPageText: '>',
+    //     prePageText: '<',
+    //     showTotal: true,
+    //     alwaysShowAllBtns: true,
+    //     onPageChange: function (page, sizePerPage) {
+    //         console.log('page', page);
+    //         console.log('sizePerPage', sizePerPage);
+    //     },
+    //     onSizePerPageChange: function (page, sizePerPage) {
+    //         console.log('page', page);
+    //         console.log('sizePerPage', sizePerPage);
+    //     }
+    // });
 
     useEffect(() => {
         show_clients();
@@ -110,6 +150,24 @@ const Users = () => {
             .catch(err => console.log(err))
     }
 
+    const searching = async () => {
+        $(document).ready(function(){
+            $("#search").on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $("#productTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+            });
+          });
+    }
+
+    const pagination = async () => {
+        $(document).ready(function () {
+            $('#paginationId').DataTable();
+            $('.dataTables_length').addClass('bs-select');
+          });
+    }
+
     return (
         <div className="container my-5">
             <div className="container-wrapper">
@@ -120,21 +178,78 @@ const Users = () => {
                         </div>
                         <div className="col-sm-4 col-md-4 mx-auto text-end">
                             <div className="search-box">
-                                <input type={"text"} className="form-control" placeholder="Buscar" />
+                                <input type={"text"} onKeyUp={searching} className="form-control" id="search" placeholder="Buscar" />
                             </div>
                         </div>
                         {/* Aquí empieza el dropdown */}
-                        <div>
-                            <div className="dropdown">
-                                <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Dropdown button
-                                </button>
-                                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a className="dropdown-item" href="#">Action</a>
-                                    <a className="dropdown-item" href="#">Another action</a>
-                                    <a className="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
+
+                        <div className="col-sm-4 col-md-4 mx-auto text-end">
+                            <Button variant="info" onClick={() => setSmShow(true)}>
+                                +  Agregar oficina
+                            </Button>
+                            <Modal
+                                size="sm"
+                                show={smShow}
+                                onHide={() => setSmShow(false)}
+                                aria-labelledby="example-modal-sizes-title-sm"
+                            >
+                                <Modal.Header closeButton>
+                                    <Modal.Title id="example-modal-sizes-title-sm">
+                                        Nueva oficina
+                                    </Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Nombre de la nueva oficina</Form.Label>
+                                            <Form.Control
+                                                id="office"
+                                                type="name"
+                                                placeholder="Moral"
+                                                autoFocus
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="danger" onClick={() => setSmShow(false)}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="success" onClick={handleAddOffice}>
+                                        Crear
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                            {/* <Button variant="success" onClick={handleShowOffice}>
+                                +  Agregar oficina
+                            </Button>
+
+                            <Modal showOffice={showOffice} onHide={handleCloseOffice}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Nueva oficina</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Oficina</Form.Label>
+                                            <Form.Control
+                                                id="office"
+                                                type="name"
+                                                placeholder="Moral"
+                                                autoFocus
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="danger" onClick={handleCloseOffice}>
+                                        Cancelar
+                                    </Button>
+                                    <Button variant="success" onClick={handleAddOffice}>
+                                        Crear
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal> */}
                         </div>
 
                         <div className="col-sm-4 col-md-4 mx-auto text-end">
@@ -181,14 +296,22 @@ const Users = () => {
                                                 placeholder="VAMA970513"
                                             />
                                         </Form.Group>
-                                        <Form.Group className="mb-3">
+                                        {/* <Form.Group className="mb-3">
                                             <Form.Label>Oficina</Form.Label>
                                             <Form.Control
                                                 id="oficina"
                                                 type="name"
                                                 placeholder="Moral"
                                             />
-                                        </Form.Group>
+                                        </Form.Group> */}
+                                        <div className="form-group col-mb-3">
+                                            <label htmlFor="inputState">Oficina</label>
+                                            <select id="oficina" className="form-control">
+                                                {officeList.map((item) =>
+                                                    <option key={item.id}>{item.name}</option>
+                                                )};
+                                            </select>
+                                        </div>
                                     </Form>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -205,7 +328,7 @@ const Users = () => {
                 </div>
                 <div className="container-body mt-5">
                     <div className="table-responsive">
-                        <table className="table table-stripped table-hover table-borderless">
+                        <table className="table table-stripped table-hover table-borderless" id="paginationId">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -216,7 +339,7 @@ const Users = () => {
                                     <th>Oficina</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="productTable">
                                 {userList.map((clients) => {
                                     return (
                                         <tr key={clients.id}>
