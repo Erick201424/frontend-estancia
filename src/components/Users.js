@@ -172,7 +172,7 @@ const Users = () => {
         <div className="container my-5">
             <div className="container-wrapper">
                 <div className="container-head">
-                    <div className="row g-0">
+                    <div className="row ow-cols-2 row-cols-lg-5 g-2 g-lg-3">
                         <div className="col-sm-4 col-md-4 mx-auto">
                             <h3>Lista de Clientes</h3>
                         </div>
