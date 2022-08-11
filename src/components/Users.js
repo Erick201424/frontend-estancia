@@ -348,7 +348,7 @@ const Users = () => {
                                             <td>{clients.lastName}</td>
                                             <td>{clients.secondSurname}</td>
                                             <td>{clients.curp}</td>
-                                            <td>{officeList[clients.catOfficeId - 1].name}</td>
+                                            {/* <td>{officeList[clients.catOfficeId].name}</td> */}
                                         </tr>
                                     );
                                 })}
