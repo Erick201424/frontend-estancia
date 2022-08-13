@@ -7,7 +7,6 @@ import OfficeUpdate from './components/OfficeUpdate'
 
 function App() {
 
-
   return (
     <div className="App">
       <Routes>
@@ -15,6 +14,7 @@ function App() {
         <Route path="/userUpdate" element={<UserUpdate />} />
         <Route path="/office" element={<Offices />} />
         <Route path="/officeUpdate" element={<OfficeUpdate />} />
+        <Route path='/offices' element={ <Offices/> }/>
       </Routes>
     </div>
   );
