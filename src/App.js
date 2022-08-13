@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Users from './components/Users';
-import DataList from './DataList';
-import { useEffect, useState} from 'react';
+import UserUpdate from './components/UserUpdate';
+import Offices from './components/Offices'
+import OfficeUpdate from './components/OfficeUpdate'
 
 function App() {
 
@@ -11,6 +12,9 @@ function App() {
     <div className="App">
       <Routes>
         <Route path='/' element={ <Users/> }/>
+        <Route path="/userUpdate" element={<UserUpdate />} />
+        <Route path="/office" element={<Offices />} />
+        <Route path="/officeUpdate" element={<OfficeUpdate />} />
       </Routes>
     </div>
   );

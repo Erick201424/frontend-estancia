@@ -8,30 +8,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { pink } from '@mui/material/colors';
 
-const Users = () => {
+const Offices = () => {
     const navigate = useNavigate()
-    const [userList, setUserList] = useState([]);
     const [officeList, setOfficeList] = useState([]);
-    const [show, setShow] = useState(false);
+    const [smShow, setSmShow] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const handleSubmit = async () => {
-
+    const handleAddOffice = async () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        var names = document.getElementById('names').value;
-        var last_name = document.getElementById('apellidoP').value;
-        var second_last_name = document.getElementById('apellidoM').value;
-        var curp = document.getElementById('curp').value;
-        var oficina = (document.getElementById('oficina').selectedIndex) + 1;
+        var oficina = document.getElementById('office').value;
 
         var body_json = JSON.stringify({
-            "name": names,
-            "lastName": last_name,
-            "secondSurname": second_last_name,
-            "curp": curp,
-            "catOfficeId": oficina
+            "name": oficina
         });
 
         var request_json = {
@@ -41,17 +29,17 @@ const Users = () => {
             redirect: 'follow'
         };
 
-        const res = await fetch('http://localhost:3000/api/client/create', request_json)
+        const res = await fetch('http://localhost:3000/api/office/create', request_json)
             .then(response => response.text())
             .then(result => {
-                if (result === "Cliente registrado") {
+                if (result === "Oficina registrada") {
                     Swal.fire({
-                        title: 'Usuario creado con éxito',
+                        title: 'Oficina creada con éxito',
                         icon: 'success',
                         confirmButtonText: 'OK'
                     })
-                    handleClose();
-                    show_clients();
+                    setSmShow(false);
+                    show_offices();
                 }
             })
             .catch(error => {
@@ -64,16 +52,11 @@ const Users = () => {
     }
 
     useEffect(() => {
-        show_clients();
+        show_offices();
     }, [])
 
-    const show_clients = async () => {
-
-        const res = await fetch('http://localhost:3000/api/client/list');
+    const show_offices = async () => {
         const get_office = await fetch('http://localhost:3000/api/office/list');
-        res.json()
-            .then(res => setUserList(res))
-            .catch(err => console.log(err))
 
         get_office.json()
             .then(res => setOfficeList(res))
@@ -97,7 +80,7 @@ const Users = () => {
                 <div className="container-head">
                     <div className="row ow-cols-2 row-cols-lg-5 g-2 g-lg-3">
                         <div className="col-sm-4 col-md-4 mx-auto">
-                            <h3>Lista de Clientes</h3>
+                            <h3>Lista de Oficinas</h3>
                         </div>
                         <div className="col-sm-4 col-md-4 mx-auto text-end">
                             <div className="search-box">
@@ -107,71 +90,45 @@ const Users = () => {
 
                         <div className="col-sm-4 col-md-4 mx-auto text-end">
                             <Button variant="info" onClick={() => {
-                                navigate('/office')
+                                navigate('/')
                             }}>
-                                Ir a oficinas
+                                Ir a clientes
                             </Button>
                         </div>
 
                         <div className="col-sm-4 col-md-4 mx-auto text-end">
-                            <Button variant="primary" onClick={handleShow}>
-                                +  Agregar cliente
+                            <Button variant="primary" onClick={() => setSmShow(true)}>
+                                +  Agregar oficina
                             </Button>
-
-                            <Modal show={show} onHide={handleClose}>
+                            <Modal
+                                size="sm"
+                                show={smShow}
+                                onHide={() => setSmShow(false)}
+                                aria-labelledby="example-modal-sizes-title-sm"
+                            >
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Nuevo cliente</Modal.Title>
+                                    <Modal.Title id="example-modal-sizes-title-sm">
+                                        Nueva oficina
+                                    </Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Nombre(s)</Form.Label>
+                                            <Form.Label>Nombre de la nueva oficina</Form.Label>
                                             <Form.Control
-                                                id="names"
+                                                id="office"
                                                 type="name"
-                                                placeholder="Alberto"
+                                                placeholder="Moral"
                                                 autoFocus
                                             />
                                         </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Apellido paterno</Form.Label>
-                                            <Form.Control
-                                                id="apellidoP"
-                                                type="name"
-                                                placeholder="Vázquez"
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Apellido materno</Form.Label>
-                                            <Form.Control
-                                                id="apellidoM"
-                                                type="name"
-                                                placeholder="Miranda"
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>CURP</Form.Label>
-                                            <Form.Control
-                                                id="curp"
-                                                type="name"
-                                                placeholder="VAMA970513"
-                                            />
-                                        </Form.Group>
-                                        <div className="form-group col-mb-3">
-                                            <label htmlFor="inputState">Oficina</label>
-                                            <select id="oficina" className="form-control">
-                                                {officeList.map((item) =>
-                                                    <option key={item.id}>{item.name}</option>
-                                                )};
-                                            </select>
-                                        </div>
                                     </Form>
                                 </Modal.Body>
                                 <Modal.Footer>
-                                    <Button variant="danger" onClick={handleClose}>
+                                    <Button variant="danger" onClick={() => setSmShow(false)}>
                                         Cancelar
                                     </Button>
-                                    <Button variant="success" onClick={handleSubmit}>
+                                    <Button variant="success" onClick={handleAddOffice}>
                                         Crear
                                     </Button>
                                 </Modal.Footer>
@@ -184,34 +141,20 @@ const Users = () => {
                         <table className="table table-stripped table-hover table-borderless" id="paginationId">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Nombre</th>
-                                    <th>Apellido Paterno</th>
-                                    <th>Apellido Materno</th>
-                                    <th>Curp</th>
                                     <th>Oficina</th>
                                 </tr>
                             </thead>
                             <tbody id="productTable">
-                                {userList.map((clients) => {
+                                {officeList.map((office) => {
                                     return (
-                                        <tr key={clients.id}>
-                                            <td>{clients.id}</td>
-                                            <td>{clients.name}</td>
-                                            <td>{clients.lastName}</td>
-                                            <td>{clients.secondSurname}</td>
-                                            <td>{clients.curp}</td>
-                                            <td>{officeList[clients.catOfficeId - 1].name}</td>
-                                            <td>
-                                                <Button id="btnV" value={clients.id} variant="primary" onClick={() => {
-                                                    navigate('/userUpdate', {
+                                        <tr key={office.id}>
+                                            <td>{office.name}</td>
+                                            <td className="text-end">
+                                                <Button id="btnV" value={office.id} variant="primary" onClick={() => {
+                                                    navigate('/officeUpdate', {
                                                         state: {
-                                                            id: clients.id,
-                                                            name: clients.name,
-                                                            lastName: clients.lastName,
-                                                            secondSurname: clients.secondSurname,
-                                                            curp: clients.curp,
-                                                            catOfficeId: officeList[clients.catOfficeId - 1].name
+                                                            id: office.id,
+                                                            name: office.name
                                                         }
                                                     });
                                                 }}>
@@ -223,7 +166,7 @@ const Users = () => {
                                                     myHeaders.append("Content-Type", "application/json");
 
                                                     var raw = JSON.stringify({
-                                                        "id": clients.id
+                                                        "id": office.id
                                                     });
 
                                                     var requestOptions = {
@@ -233,16 +176,16 @@ const Users = () => {
                                                         redirect: 'follow'
                                                     };
 
-                                                    fetch("http://localhost:3000/api/client/delete", requestOptions)
+                                                    fetch("http://localhost:3000/api/office/delete", requestOptions)
                                                         .then(response => response.text())
                                                         .then(result => console.log(result))
                                                         .catch(error => console.log('error', error));
                                                     Swal.fire({
-                                                        title: 'Cliente eliminado exitosamente',
+                                                        title: 'Oficina eliminada exitosamente',
                                                         icon: 'success',
                                                         confirmButtonText: 'OK'
                                                     })
-                                                    show_clients();
+                                                    show_offices();
                                                 }}><DeleteIcon sx={{ fontSize: 20, color: pink[500] }} /></Button>
                                             </td>
                                         </tr>
@@ -255,8 +198,8 @@ const Users = () => {
                 </div>
             </div >
         </div >
-
     );
-};
 
-export default Users;
+}
+
+export default Offices;

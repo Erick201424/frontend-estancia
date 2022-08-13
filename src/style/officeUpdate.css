@@ -1,0 +1,20 @@
+.container-Update{
+    margin-top: 10%;
+    background-color: #e4e8f0;
+    border-radius: 10px;
+    min-width: 200px;
+    min-height: 180px;
+    display: grid;
+    grid-template-rows: 15% 85% ;
+    grid-template-areas: "title"
+                            "main";
+}
+
+.mgTop {
+    margin-top: 10px;
+}
+
+.displayBtn {
+    display: inline-block;
+    vertical-align: top;
+}
