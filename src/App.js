@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import Users from './components/Users';
 import UserUpdate from './components/UserUpdate';
 import Offices from './components/Offices'
-import OfficeUpdate from './components/OfficeUpdate'
 
 function App() {
 
@@ -13,7 +12,6 @@ function App() {
         <Route path='/' element={ <Users/> }/>
         <Route path="/userUpdate" element={<UserUpdate />} />
         <Route path="/office" element={<Offices />} />
-        <Route path="/officeUpdate" element={<OfficeUpdate />} />
         <Route path='/offices' element={ <Offices/> }/>
       </Routes>
     </div>
